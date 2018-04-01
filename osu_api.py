@@ -8,6 +8,11 @@ from aiohttp import ClientSession
 from settings import io_folder, api_key
 
 
+api_get_beatmaps = 'https://osu.ppy.sh/api/get_beatmaps'
+api_get_user_recent = 'https://osu.ppy.sh/api/get_user_recent'
+api_download_beatmaps = 'https://osu.ppy.sh/osu/'
+api_get_user = 'https://osu.ppy.sh/api/get_user'
+
 class OsuApi():
 
     def __init__(self, api_key_param):
@@ -15,10 +20,7 @@ class OsuApi():
         Keyword arguments:
         api_key_param -- osu! api key, can be retrieved here https://osu.ppy.sh/p/api"""
         self.api_key = api_key_param
-        self.api_get_beatmaps = 'https://osu.ppy.sh/api/get_beatmaps'
-        self.api_get_user_recent = 'https://osu.ppy.sh/api/get_user_recent'
-        self.api_download_beatmaps = 'https://osu.ppy.sh/osu/'
-        self.api_get_user = 'https://osu.ppy.sh/api/get_user'
+
 
     def get_user(self, name, mode='0'):
         """Returns general user information.
@@ -32,7 +34,7 @@ class OsuApi():
             'm': mode,
             'type': 'u'
         }
-        response = requests.post(self.api_get_user, data=body)
+        response = requests.post(api_get_user, data=body)
         return response.json()
 
     def get_beatmap(self, since, mode='0', a='0'):
@@ -48,7 +50,7 @@ class OsuApi():
             'm': mode,
             'a': a
         }
-        response = requests.get(self.api_get_beatmaps, params=body)
+        response = requests.get(api_get_beatmaps, params=body)
         return response.json()
 
     def get_user_recent(self, name, limit=1, mode='0'):
@@ -66,7 +68,7 @@ class OsuApi():
             'limit': limit,
             'type': 'string'
         }
-        response = requests.get(self.api_get_user_recent, params=body)
+        response = requests.get(api_get_user_recent, params=body)
         return response.json()
 
     def get_beatmaps(self, b_ids, mode='0', a='1', threads=10):
@@ -80,7 +82,7 @@ class OsuApi():
         """
 
         async def api_get_beatmap(body, session):
-            async with session.post(self.api_get_beatmaps, params=body) as response:
+            async with session.post(api_get_beatmaps, params=body) as response:
                 resp = await response.json()
                 return resp
 
@@ -133,7 +135,7 @@ class OsuApi():
                     tasks.append(task)
                 _ = await asyncio.gather(*tasks)
 
-        urls = [(self.api_download_beatmaps + b_id) for b_id in b_ids]
+        urls = [(api_download_beatmaps + b_id) for b_id in b_ids]
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
         future = asyncio.ensure_future(fetch_all(b_ids, urls))
