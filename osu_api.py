@@ -1,5 +1,5 @@
 """Partial implementation of https://github.com/ppy/osu-api/wiki
-wheelchairs included!
+Wheelchairs included!
 """
 import requests
 import codecs
@@ -11,6 +11,9 @@ from settings import io_folder, api_key
 class OsuApi():
 
     def __init__(self, api_key_param):
+        """
+        Keyword arguments:
+        api_key_param -- osu! api key, can be retrieved here https://osu.ppy.sh/p/api"""
         self.api_key = api_key_param
         self.api_get_beatmaps = 'https://osu.ppy.sh/api/get_beatmaps'
         self.api_get_user_recent = 'https://osu.ppy.sh/api/get_user_recent'
@@ -18,6 +21,11 @@ class OsuApi():
         self.api_get_user = 'https://osu.ppy.sh/api/get_user'
 
     def get_user(self, name, mode='0'):
+        """Returns general user information.
+
+        Keyword arguments:
+        name -- osu! user name
+        mode -- game mode ('0' = osu!, '1' = Taiko, '2' = CtB, '3' = osu!mania)"""
         body = {
             'k': self.api_key,
             'u': name,
@@ -28,6 +36,12 @@ class OsuApi():
         return response.json()
 
     def get_beatmap(self, since, mode='0', a='0'):
+        """Returns general beatmap information.
+
+        Keyword arguments:
+        since -- return all beatmaps ranked or loved since this date. Must be a MySQL date.
+        mode -- game mode
+        a -- specify whether converted beatmaps are included ('0' = not included, '1' = included)"""
         body = {
             'k': self.api_key,
             'since': since,
@@ -37,10 +51,17 @@ class OsuApi():
         response = requests.get(self.api_get_beatmaps, params=body)
         return response.json()
 
-    def get_user_recent(self, username, limit=1, mode='0'):
+    def get_user_recent(self, name, limit=1, mode='0'):
+        """Returns the user's ten most recent plays over the last 24 hours.
+        
+        Keyword arguments:
+        name -- osu! user name
+        limit -- amount of results (range between 1 and 50)
+        mode -- game mode
+        """
         body = {
             'k': self.api_key,
-            'u': username,
+            'u': name,
             'm': mode,
             'limit': limit,
             'type': 'string'
@@ -49,6 +70,14 @@ class OsuApi():
         return response.json()
 
     def get_beatmaps(self, b_ids, mode='0', a='1', threads=10):
+        """Returns general beatmap information for multiple beatmaps.
+        
+        Keyword arguments:
+        b_ids -- list of beatmap ids to return metadata from
+        mode -- game mode
+        a -- specify whether converted beatmaps are included
+        threads -- number of threads used to make http requests, b_ids are split between them
+        """
 
         async def api_get_beatmap(body, session):
             async with session.post(self.api_get_beatmaps, params=body) as response:
@@ -81,6 +110,12 @@ class OsuApi():
         return resp
 
     def download_beatmaps(self, b_ids, threads=10):
+        """Downloads .osu beatmap file into io_folder.
+        
+        Keyword arguments:
+        b_ids - list of beatmap ids to download
+        threads -- number of threads used to download beatmap files, b_ids are split between them
+        """
 
         async def download_beatmap(b_id, url, session):
             async with session.get(url) as response:

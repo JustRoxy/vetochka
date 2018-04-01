@@ -1,3 +1,4 @@
+"""Posts some hot dank memes from reddit."""
 import praw
 from random import shuffle
 from datetime import datetime
@@ -12,6 +13,12 @@ subreddits = [('DeepFriedMemes', None),
 
 
 def fetch_memes(reddit, sub, flair=None):
+    """Returns pic links of 50 hot memes of specified subreddit.
+
+    Keyword arguments:
+    sub -- subreddit name
+    flair -- reddit flair (None by default)
+    """
     response = reddit.subreddit(sub).hot(limit=50)
     urls = []
     if flair:

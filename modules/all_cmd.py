@@ -1,3 +1,4 @@
+"""Highlights all users in 'database'."""
 from global_objects import users
 
 

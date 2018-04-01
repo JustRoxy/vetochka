@@ -1,0 +1,4 @@
+settings.py
+__pycache__/
+oppai_cache/
+trash/

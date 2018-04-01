@@ -1,3 +1,7 @@
+"""Main bot module.
+To add new command you should:
+1) Add module with function doing some stuff
+2) Add handler"""
 from settings import token
 from telegram.ext import Updater, CommandHandler
 import logging

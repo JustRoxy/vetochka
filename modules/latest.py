@@ -1,3 +1,6 @@
+"""Prints info about recent plays.
+Rank, metadata, mods, accuracy, combo, hit info, pp, time are included.
+"""
 import os
 import pyoppai
 from telegram import ParseMode
@@ -7,7 +10,12 @@ from osu_utils import parse_mods, datetime_fromnow
 
 
 def oppai_call(score):
-    """It's gonna be messy xd"""
+    """Big ass oppai call to return score information.
+    I don't appreciate it much too.
+
+    Keyword arguments:
+    score -- score information returned by get_user_recent
+    """
     ctx = pyoppai.new_ctx()
     b = pyoppai.new_beatmap(ctx)
     BUFSIZE = 2000000  # should be big enough to hold the .osu file
@@ -48,6 +56,11 @@ def oppai_call(score):
 
 
 def html_score_info(score, oppai_score_info):
+    """Returns more or less nice formatted score information
+
+    Keyword arguments:
+    oppai_score_info -- oppai_call result
+    """
     lines = []
     map_url = '"https://osu.ppy.sh/b/{}"'.format(score['beatmap_id'])
     date_info = datetime_fromnow(score['date'])
@@ -62,12 +75,26 @@ def html_score_info(score, oppai_score_info):
     return "\n".join(lines)
 
 
-def latest(bot, update):
+def parse_number(text):
+    """Return number of recent scores specified in command call.
+
+    Keyword arguments:
+    text -- update.message.text
+    """
     limit = 1
-    for item in update.message.text.split(" "):
+    for item in text.split(" "):
         if item.isdigit():
             if int(item) > 0 and int(item) < 15:
                 limit = int(item)
+    return limit
+
+
+def latest(bot, update):
+    """Prints info about recent plays if user is in 'database'.
+    Number of scores to show may be specified in command call.
+    Rank, metadata, mods, accuracy, combo, hit info, pp, time are included.
+    """
+    limit = parse_number(update.message.text)
     username = update.message.from_user.username
     if username in users:
         ingame_name = users[username]

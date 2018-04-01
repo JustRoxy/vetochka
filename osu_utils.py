@@ -1,7 +1,10 @@
+"""Useful functions dump."""
 from datetime import datetime, timedelta
 
 
 def parse_mods(bitmask):
+    """Returns string with enabled mods.
+    See https://github.com/ppy/osu-api/wiki for reference."""
     mod_bits = {
         'NF': 1,
         'EZ': 2,
@@ -31,8 +34,13 @@ def parse_mods(bitmask):
 
 
 def datetime_fromnow(date):
+    """Returns time difference between datetime score was set and current datetime.
+    NOTE - datetime got by osu! api is UTC+8
+
+    Keyword arguments:
+    date -- datetime got by osu! api"""
     date_score = datetime.strptime(date, "%Y-%m-%d %H:%M:%S")
-    date_now = datetime.utcnow() + timedelta(hours=8)  # hello peppy
+    date_now = datetime.utcnow() + timedelta(hours=8)
     date_diff = date_now - date_score
     hours = int(date_diff.seconds / 3600)
     minutes = int((date_diff.seconds - hours * 3600) / 60)
